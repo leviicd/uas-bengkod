@@ -4,8 +4,9 @@
   <div class="content-header">
     <div class="d-flex align-items-center justify-content-between">
       <h1 class="poli-page-title">Riwayat: {{ $namaPasien }}</h1>
-      <a href="{{ route('riwayatDokter') }}" class="btn btn-secondary btn-sm">
-        <i class="fas fa-arrow-left mr-1"></i> Kembali
+      <a href="{{ route('riwayatDokter') }}" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;border-radius:8px;padding:6px 12px;font-weight:600;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Kembali
       </a>
     </div>
     <p class="text-muted mt-1" style="font-size:13px;">Total kunjungan: <strong>{{ $totalKunjungan }}</strong> kali</p>

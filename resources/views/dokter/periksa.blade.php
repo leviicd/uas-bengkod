@@ -42,18 +42,35 @@
                   @endif
                 </td>
                 <td style="text-align:right;">
-                  <button class="btn btn-sm {{ $item->status === 'selesai' ? 'btn-warning' : 'btn-info' }}"
-                    data-toggle="modal"
-                    data-target="#editModal"
-                    data-id="{{ $item->id }}"
-                    data-nama="{{ $item->pasien->nama }}"
-                    data-tgl="{{ $item->tgl_periksa }}"
-                    data-keluhan="{{ $item->keluhan }}"
-                    data-catatan="{{ $item->catatan_dokter }}"
-                    data-biaya="{{ $item->biaya_periksa }}">
-                    <i class="fas fa-{{ $item->status === 'selesai' ? 'edit' : 'stethoscope' }}"></i>
-                    {{ $item->status === 'selesai' ? 'Edit' : 'Periksa' }}
-                  </button>
+                  @if($item->status === 'selesai')
+                    <button class="btn btn-warning btn-sm"
+                      data-toggle="modal"
+                      data-target="#editModal"
+                      data-id="{{ $item->id }}"
+                      data-nama="{{ $item->pasien->nama }}"
+                      data-tgl="{{ $item->tgl_periksa }}"
+                      data-keluhan="{{ $item->keluhan }}"
+                      data-catatan="{{ $item->catatan_dokter }}"
+                      data-biaya="{{ $item->biaya_periksa }}"
+                      title="Edit"
+                      style="width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                  @else
+                    <button class="btn btn-info btn-sm"
+                      data-toggle="modal"
+                      data-target="#editModal"
+                      data-id="{{ $item->id }}"
+                      data-nama="{{ $item->pasien->nama }}"
+                      data-tgl="{{ $item->tgl_periksa }}"
+                      data-keluhan="{{ $item->keluhan }}"
+                      data-catatan="{{ $item->catatan_dokter }}"
+                      data-biaya="{{ $item->biaya_periksa }}"
+                      style="display:inline-flex;align-items:center;border-radius:8px;padding:6px 12px;font-weight:600;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                      Periksa
+                    </button>
+                  @endif
                 </td>
               </tr>
             @empty
@@ -135,7 +152,7 @@
 
 <script>
   $(document).ready(function() {
-    let hargaPemeriksaan = 150000;
+    let hargaPemeriksaan = 100000;
     let totalObat = 0;
 
     function updateTotal() {
@@ -177,7 +194,9 @@
         const html = `<li class="list-group-item d-flex justify-content-between align-items-center" id="obat-item-${id}" style="border-radius:10px;margin-bottom:6px;border:1px solid #f0f3f8;">
           <span>${nama} <span class="text-muted" style="font-size:12px;">Rp. ${harga.toLocaleString('id-ID')}</span></span>
           <input type="hidden" name="obats[]" value="${id}">
-          <button type="button" class="btn btn-danger btn-sm btnHapusObat" data-id="${id}" data-harga="${harga}"><i class="fas fa-times"></i></button>
+          <button type="button" class="btn btn-danger btn-sm btnHapusObat" data-id="${id}" data-harga="${harga}" style="width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </li>`;
         $('#listObat').append(html);
         totalObat += harga;

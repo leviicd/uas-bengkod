@@ -99,7 +99,10 @@
                         @endif
                       </td>
                       <td>
-                        <a href="{{ route('periksa.detail', $item->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Lihat</a>
+                        <a href="{{ route('periksa.detail', $item->id) }}" class="btn btn-sm btn-info" style="display:inline-flex;align-items:center;border-radius:8px;padding:6px 12px;font-weight:600;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                          Lihat
+                        </a>
                       </td>
                     </tr>
                   @empty

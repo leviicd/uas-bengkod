@@ -29,6 +29,8 @@
   <link rel="stylesheet" href="{{ asset('AdminLTE-3.2.0/plugins/daterangepicker/daterangepicker.css') }}">
   <!-- Summernote -->
   <link rel="stylesheet" href="{{ asset('AdminLTE-3.2.0/plugins/summernote/summernote-bs4.min.css') }}">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
   <style>
     /* =============================================
@@ -143,12 +145,7 @@
 
     .sidebar .nav-sidebar .nav-link i,
     .sidebar .nav-sidebar .nav-link .nav-icon {
-      font-size: 15px !important;
-      width: 22px !important;
-      text-align: center !important;
-      color: rgba(255,255,255,0.55) !important;
-      margin-right: 12px !important;
-      flex-shrink: 0;
+      display: none !important;
     }
 
     .sidebar .nav-sidebar .nav-link p {
@@ -206,7 +203,7 @@
     }
 
     .poli-logout-btn i {
-      font-size: 15px;
+      display: none !important;
     }
 
     /* =============================================
@@ -392,6 +389,11 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
     }
 
+    .small-box > .inner {
+      text-align: center !important;
+      padding: 20px 10px !important;
+    }
+
     .small-box.bg-info { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; }
     .small-box.bg-success { background: linear-gradient(135deg, #10b981, #059669) !important; }
     .small-box.bg-warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
@@ -412,6 +414,13 @@
       background: rgba(0,0,0,0.1) !important;
       font-size: 12px !important;
       font-weight: 600 !important;
+    }
+
+    /* Hide broken Font Awesome icon boxes globally */
+    i.fa, i.fas, i.far, i.fab, i.fal,
+    [class^="fa-"], [class*=" fa-"],
+    .nav-icon, .small-box .icon {
+      display: none !important;
     }
 
     /* =============================================
@@ -576,6 +585,59 @@
     .table-bordered { border: none !important; }
     .table-bordered td, .table-bordered th { border: none !important; border-bottom: 1px solid #f5f7fb !important; }
     .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Custom SweetAlert2 Premium Style */
+    .swal2-popup.swal2-premium-popup {
+      font-family: 'Instrument Sans', sans-serif !important;
+      border-radius: 20px !important;
+      padding: 2rem 1.5rem !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+      border: 1px solid #f1f5f9 !important;
+    }
+    .swal2-premium-popup .swal2-title {
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      font-size: 20px !important;
+      padding-top: 10px !important;
+    }
+    .swal2-premium-popup .swal2-html-container {
+      color: #64748b !important;
+      font-size: 14px !important;
+      margin-top: 8px !important;
+    }
+    .swal2-premium-popup .swal2-actions {
+      margin-top: 1.5rem !important;
+      gap: 10px !important;
+    }
+    .swal2-premium-popup .swal2-confirm {
+      background-color: #ef4444 !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      padding: 10px 24px !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+      transition: all 0.2s ease !important;
+    }
+    .swal2-premium-popup .swal2-confirm:hover {
+      background-color: #dc2626 !important;
+      box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25) !important;
+    }
+    .swal2-premium-popup .swal2-cancel {
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      border: none !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      padding: 10px 24px !important;
+      transition: all 0.2s ease !important;
+    }
+    .swal2-premium-popup .swal2-cancel:hover {
+      background-color: #e2e8f0 !important;
+      color: #334155 !important;
+    }
   </style>
 </head>
 

@@ -27,10 +27,11 @@
               <td>1</td>
               <td>dr. Andi</td>
               <td>10-04-2025</td>
-              <td><span class="badge badge-success">Rp 150.000</span></td>
+              <td><span class="badge badge-success">Rp 100.000</span></td>
               <td style="text-align:right;">
-                <a href="#" data-toggle="modal" data-target="#modalDetail1" class="btn btn-info btn-sm">
-                  <i class="fas fa-eye"></i> Detail
+                <a href="#" data-toggle="modal" data-target="#modalDetail1" class="btn btn-info btn-sm" style="display:inline-flex;align-items:center;border-radius:8px;padding:6px 12px;font-weight:600;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Detail
                 </a>
               </td>
             </tr>
@@ -40,8 +41,9 @@
               <td>11-04-2025</td>
               <td><span class="badge badge-danger">Belum Ada</span></td>
               <td style="text-align:right;">
-                <a href="#" data-toggle="modal" data-target="#modalDetail2" class="btn btn-info btn-sm">
-                  <i class="fas fa-eye"></i> Detail
+                <a href="#" data-toggle="modal" data-target="#modalDetail2" class="btn btn-info btn-sm" style="display:inline-flex;align-items:center;border-radius:8px;padding:6px 12px;font-weight:600;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Detail
                 </a>
               </td>
             </tr>
@@ -63,7 +65,7 @@
           <div class="modal-body">
             <p><strong>Dokter:</strong> dr. Andi</p>
             <p><strong>Tanggal Periksa:</strong> 10-04-2025 10:00</p>
-            <p><strong>Biaya:</strong> Rp 150.000</p>
+            <p><strong>Biaya:</strong> Rp 100.000</p>
             <p><strong>Catatan:</strong> Pasien mengalami flu ringan</p>
             <p><strong>Obat:</strong></p>
             <ul>

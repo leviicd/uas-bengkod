@@ -25,5 +25,46 @@
 <script src="{{ asset('AdminLTE-3.2.0/plugins/summernote/summernote-bs4.min.js') }}"></script>
 <script src="{{ asset('AdminLTE-3.2.0/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 <script src="{{ asset('AdminLTE-3.2.0/dist/js/adminlte.js') }}"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $(document).ready(function() {
+    // Cari semua tombol yang memiliki onclick confirm bawaan browser pada form
+    $('form button[onclick*="confirm"], form input[type="submit"][onclick*="confirm"]').each(function() {
+      const btn = $(this);
+      const onclickStr = btn.attr('onclick') || '';
+      // Ekstrak pesan dari confirm('...')
+      const match = onclickStr.match(/confirm\(['"](.*?)['"]\)/);
+      const message = (match && match[1]) ? match[1] : 'Apakah Anda yakin ingin menghapus data ini?';
+      
+      // Hapus inline onclick bawaan browser agar tidak memicu notifikasi native saat diklik
+      btn.removeAttr('onclick');
+      
+      // Pasangkan click event handler custom dengan SweetAlert2
+      btn.on('click', function(e) {
+        e.preventDefault();
+        const form = btn.closest('form');
+
+        Swal.fire({
+          title: 'Konfirmasi Hapus',
+          text: message,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#64748b',
+          confirmButtonText: 'Ya, Hapus!',
+          cancelButtonText: 'Batal',
+          customClass: {
+            popup: 'swal2-premium-popup'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  });
+</script>
 </body>
 </html>

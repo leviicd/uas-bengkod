@@ -1,0 +1,194 @@
+================================================================================
+SCRIPT & PANDUAN PRESENTASI UAS - SISTEM INFORMASI POLIKLINIK (LARAVEL MVC)
+Durasi: 5-7 Menit | Target Nilai: Maksimal (Dilengkapi Studi Kasus & Logika Kode)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. PEMBUKAAN (+- 30 Detik)
+--------------------------------------------------------------------------------
+"Selamat pagi/siang Bapak/Ibu Dosen Penguji. 
+
+Hari ini saya akan mempresentasikan proyek Capstone UAS saya, yaitu Sistem Informasi 
+Poliklinik yang dibangun menggunakan framework Laravel dengan pola arsitektur MVC 
+(Model-View-Controller).
+
+Sistem ini memiliki tiga hak akses (multi-role) utama: Admin, Dokter, dan Pasien. 
+Fokus utama yang akan saya tekankan hari ini adalah integrasi Manajemen Periksa Pasien, 
+Riwayat Medis, dan fitur krusial berupa Manajemen Stok Obat otomatis."
+
+
+--------------------------------------------------------------------------------
+2. DEMO APLIKASI & HAK AKSES (+- 1 Menit)
+--------------------------------------------------------------------------------
+"Aplikasi ini memiliki pembagian hak akses yang tegas menggunakan middleware Laravel:
+- Pasien: Login -> Daftar periksa dengan memilih jadwal dokter aktif -> Mendapat no. antrian.
+- Dokter: Login -> Memeriksa pasien -> Mengisi diagnosa/catatan -> Meresepkan obat & biaya.
+- Admin: Login -> Mengelola data Master (Dokter, Pasien, Poli, Obat) & memantau stok obat."
+
+
+--------------------------------------------------------------------------------
+3. ALUR LOGIKA UTAMA & IMPLEMENTASI KODE (+- 3 Menit)
+--------------------------------------------------------------------------------
+
+A. MANAJEMEN PERIKSA & AUTOMATIC DECREMENT STOK (Integrasi Dokter & Obat)
+-------------------------------------------------------------------------
+"Ketika dokter memeriksa pasien dan menginputkan resep, sistem akan memvalidasi stok. 
+Jika stok memadai, status pemeriksaan diubah menjadi 'selesai', dan stok obat 
+otomatis berkurang menggunakan fungsi decrement()."
+
+* Lokasi File: app/Http/Controllers/DokterController.php
+* Fungsi: updatePeriksa()
+
+[POTONGAN KODE KUNCI]:
+-------------------------------------------------------------------------
+// 1. Validasi kecukupan stok sebelum disimpan
+$obatIds = $request->obats ?? [];
+if (!empty($obatIds)) {
+    $obatList = Obat::whereIn('id', $obatIds)->get();
+    $jumlahObat = array_count_values($obatIds); // Hitung jumlah tiap obat yang dipilih
+
+    $stokError = [];
+    foreach ($obatList as $obat) {
+        $jumlahDiminta = $jumlahObat[$obat->id] ?? 1;
+        if ($obat->stok < $jumlahDiminta) {
+            $stokError[] = "Stok {$obat->nama_obat} tidak cukup (sisa {$obat->stok} unit).";
+        }
+    }
+
+    if (!empty($stokError)) {
+        return redirect()->back()->with('error', 'Gagal: ' . implode(' | ', $stokError));
+    }
+}
+
+// 2. Simpan data pemeriksaan & Ubah status ke selesai
+$periksa->update([
+    'catatan_dokter' => $request->catatan_dokter,
+    'biaya_periksa' => $request->biaya_periksa,
+    'status' => 'selesai',
+]);
+
+// 3. Otomatis mengurangi stok obat yang diresepkan (Auto-decrement)
+if (!empty($obatIds)) {
+    foreach ($jumlahObat as $obatId => $jumlah) {
+        Obat::where('id', $obatId)->decrement('stok', $jumlah);
+    }
+}
+$periksa->obats()->sync($obatIds); // Simpan relasi ke tabel pivot detail_periksas
+-------------------------------------------------------------------------
+
+
+B. MANAJEMEN STOK OBAT MANUAL & HANDLING STOK HABIS (Sisi Admin)
+-------------------------------------------------------------------------
+"Admin dapat mengelola stok secara manual (tambah/kurang) melalui aksi cepat modal. 
+Model Obat juga dilengkapi helper untuk mendeteksi stok yang habis atau menipis."
+
+* Lokasi File Model: app/Models/Obat.php
+* Fungsi: isHabis() & isMenuipis()
+
+[POTONGAN KODE KUNCI]:
+-------------------------------------------------------------------------
+public function isHabis(): bool {
+    return $this->stok <= 0;
+}
+
+public function isMenuipis(): bool {
+    return $this->stok > 0 && $this->stok <= $this->stok_minimum;
+}
+-------------------------------------------------------------------------
+
+* Lokasi File Controller: app/Http/Controllers/AdminObatController.php
+* Fungsi: tambahStok() & kurangiStok()
+
+[POTONGAN KODE KUNCI]:
+-------------------------------------------------------------------------
+// Kurangi Stok Manual dengan validasi agar tidak minus
+public function kurangiStok(Request $request, $id) {
+    $request->validate(['jumlah' => 'required|integer|min:1']);
+    $obat = Obat::findOrFail($id);
+    if ($request->jumlah > $obat->stok) {
+        return redirect()->route('admin.obat.index')
+            ->with('error', "Gagal! Stok {$obat->nama_obat} hanya tersisa {$obat->stok} unit.");
+    }
+    $obat->decrement('stok', $request->jumlah);
+    return redirect()->route('admin.obat.index')->with('success', 'Stok berhasil dikurangi.');
+}
+-------------------------------------------------------------------------
+
+* Tampilan Peringatan Dinamis di View: resources/views/admin/obat.blade.php
+-------------------------------------------------------------------------
+@php
+  $stokHabis   = $obats->filter(fn($o) => $o->stok <= 0);
+  $stokMenipis = $obats->filter(fn($o) => $o->stok > 0 && $o->stok <= $o->stok_minimum);
+@endphp
+
+@if($stokHabis->count() > 0)
+  <div class="alert alert-danger"><strong>Stok Habis!</strong> {{ $stokHabis->pluck('nama_obat')->join(', ') }} kosong.</div>
+@endif
+
+@if($stokMenipis->count() > 0)
+  <div class="alert alert-warning"><strong>Stok Menipis!</strong> {{ $stokMenipis->pluck('nama_obat')->join(', ') }} hampir habis.</div>
+@endif
+-------------------------------------------------------------------------
+
+
+C. RIWAYAT PASIEN (Filter Dokter)
+-------------------------------------------------------------------------
+"Dokter hanya bisa melihat riwayat pasien yang pernah diperiksa oleh dirinya sendiri demi keamanan data."
+
+* Lokasi File: app/Http/Controllers/DokterController.php
+* Fungsi: riwayatPasien()
+
+[POTONGAN KODE KUNCI]:
+-------------------------------------------------------------------------
+$riwayat = Periksa::with(['pasien', 'jadwal.dokter'])
+    ->where('status', 'selesai')
+    ->whereHas('jadwal.dokter', function ($q) use ($dokterUserId) {
+        $q->where('user_id', $dokterUserId); // Memastikan dokter hanya melihat pasiennya sendiri
+    })
+    ->orderByDesc('tgl_periksa')
+    ->get();
+-------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+4. STRUKTUR DATABASE & RELASI (+- 1.5 Menit)
+--------------------------------------------------------------------------------
+"Skema database didefinisikan secara lengkap pada file 'bengkod_uas.sql'. 
+Berikut relasi antar tabel utama yang digunakan:
+
+1. users ──hasOne──> pasiens
+2. users ──hasOne──> dokters ──belongsTo──> polis
+3. dokters ──hasMany──> jadwal_periksas
+4. jadwal_periksas ──hasMany──> periksas
+5. periksas ──belongsToMany──> obats (Melalui tabel pivot 'detail_periksas')"
+
+* Lokasi File Model Relasi Pivot: app/Models/Periksa.php
+[POTONGAN KODE KUNCI]:
+-------------------------------------------------------------------------
+public function obats() {
+    return $this->belongsToMany(Obat::class, 'detail_periksas', 'id_periksa', 'id_obat');
+}
+-------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+5. REASONING / ALASAN DESAIN KODE (+- 1 Menit)
+--------------------------------------------------------------------------------
+"Ada beberapa pertimbangan arsitektur yang saya ambil:
+1. Satu Tabel 'users' Untuk Semua Role: Menyederhanakan proses autentikasi Laravel Guard. 
+   Detail unik pasien (No RM, No KTP) dipisahkan ke tabel 'pasiens' dengan relasi One-to-One.
+2. Validasi Stok di Controller: Logika stok diletakkan sebelum proses update data 
+   pemeriksaan disimpan untuk menghindari inkonsistensi data jika stok tiba-tiba habis.
+3. Otomatisasi No Rekam Medis: Menggunakan format TAHUNBULAN-URUTAN (contoh: 202606-001) 
+   secara otomatis saat pendaftaran guna menghindari duplikasi dan mempermudah pencarian."
+
+
+--------------------------------------------------------------------------------
+6. PENUTUP (+- 20 Detik)
+--------------------------------------------------------------------------------
+"Sistem Informasi Poliklinik ini berhasil mengintegrasikan proses pemeriksaan medis 
+sekaligus pelacakan inventaris obat secara real-time. 
+
+Terima kasih atas waktu dan perhatian Bapak/Ibu Dosen, sekarang saya persilakan jika 
+ada pertanyaan atau tanggapan."
+================================================================================
